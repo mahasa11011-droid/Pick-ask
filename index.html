@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pick &amp; Ask</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Nunito:wght@500;700;800&display=swap">
+<style>
+/* Layout: classroom board — header with class tabs, a wrapping grid of character cards, a question sheet over it */
+:root{
+  --bg:#EEF6F2; --paper:#FFFFFF; --ink:#1F2A33; --muted:#5C6B73; --line:#D3E3DB;
+  --accent:#E8674A; --accent-ink:#FFFFFF; --teal:#1F7A6D; --soft:#FCE9E3;
+  --ok:#2E8B57; --ok-bg:#DDF3E5; --bad:#C2413A; --bad-bg:#FBE1DE;
+  --f-display:"Baloo Bhaijaan 2","Nunito",system-ui,sans-serif;
+  --f-body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14201D; --paper:#1D2B28; --ink:#EAF2EE; --muted:#9FB3AB; --line:#2E423D;
+  --accent:#F07F64; --accent-ink:#1A1210; --teal:#5FC2B1; --soft:#3A2722;
+  --ok:#6FD39A; --ok-bg:#1E3A2B; --bad:#F2847C; --bad-bg:#3D2321; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14201D; --paper:#1D2B28; --ink:#EAF2EE; --muted:#9FB3AB; --line:#2E423D;
+  --accent:#F07F64; --accent-ink:#1A1210; --teal:#5FC2B1; --soft:#3A2722;
+  --ok:#6FD39A; --ok-bg:#1E3A2B; --bad:#F2847C; --bad-bg:#3D2321; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:800}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1;margin:4px 0 0;text-wrap:balance}
+h1 span{color:var(--accent)}
+.tabs{display:flex;gap:6px;background:var(--paper);border:1px solid var(--line);padding:5px;border-radius:14px}
+.tab{font:800 17px var(--f-body);border:0;background:transparent;color:var(--muted);padding:9px 18px;border-radius:10px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--teal);color:var(--paper)}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.count{font-weight:700;color:var(--muted)}
+.count b{color:var(--ink);font-size:20px;font-variant-numeric:tabular-nums}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:800 15px var(--f-body);border-radius:12px;padding:11px 16px;cursor:pointer;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:focus-visible,.card:focus-visible,.tab:focus-visible,.opt:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.confirm{display:flex;gap:8px;align-items:center;font-weight:700;color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:14px}
+.card{perspective:700px;border:0;background:none;padding:0;cursor:pointer;aspect-ratio:3/4;max-width:100%;font:inherit;color:inherit;
+  transition:transform .35s ease,opacity .35s ease}
+.card.gone{transform:scale(.3) rotate(-8deg);opacity:0;pointer-events:none}
+.card.pulse .face{box-shadow:0 0 0 4px var(--accent)}
+.inner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,1.4,.5,1);transform-style:preserve-3d}
+.card.flipped .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:18px;background:var(--paper);border:2px solid var(--line);backface-visibility:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px}
+.face svg{width:88%;height:auto}
+.num{font:800 15px var(--f-body);color:var(--muted)}
+.back{transform:rotateY(180deg);background:var(--soft);border-color:var(--accent)}
+.back .nm{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1.15;text-align:center;direction:rtl}
+.card:hover .front{border-color:var(--teal)}
+.empty{text-align:center;padding:40px 16px;background:var(--paper);border:2px dashed var(--line);border-radius:18px}
+.empty h2{font-family:var(--f-display);margin:0 0 6px}
+/* sheet */
+.veil{position:fixed;inset:0;background:rgba(15,25,22,.55);display:flex;align-items:center;justify-content:center;z-index:20;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--paper);border-radius:22px;width:min(640px,100%);max-height:100%;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px;
+  animation:pop .35s cubic-bezier(.3,1.4,.5,1)}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+.who{display:flex;align-items:center;gap:14px}
+.who svg{width:64px;flex:none}
+.who .nm{font-family:var(--f-display);font-size:30px;font-weight:800;line-height:1.1;direction:rtl}
+.chip{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--soft);color:var(--accent);padding:4px 10px;border-radius:99px}
+.q{font-size:clamp(20px,3vw,25px);font-weight:800;line-height:1.35;margin:0}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.opts{grid-template-columns:1fr}}
+.opt{font:700 17px var(--f-body);text-align:left;padding:13px 14px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;display:flex;gap:10px;align-items:baseline}
+.opt i{font-style:normal;color:var(--muted);font-weight:800}
+.opt.right{background:var(--ok-bg);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.fb{font-weight:800;min-height:1.4em}
+.fb.ok{color:var(--ok)} .fb.no{color:var(--bad)}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.sheet.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.who svg.jump{animation:jump .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes jump{30%{transform:translateY(-14px) scale(1.12) rotate(-6deg)}60%{transform:translateY(0) scale(1)}}
+.fb.ok{animation:grow .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes grow{from{transform:scale(.6);opacity:0}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:30;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.inner,.card,.sheet,.sheet.shake,.who svg.jump,.fb.ok{transition:none;animation:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Mega Goal 1 · Unit 5 · Did You Hurt Yourself?</div>
+      <h1>Pick <span>&amp;</span> Ask</h1>
+    </div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+  </header>
+  <div class="bar">
+    <div class="count" id="count"></div>
+    <div class="actions" id="actions">
+      <button class="btn primary" id="rand">🎲 Random girl</button>
+      <button class="btn" id="reset">Reset class</button>
+    </div>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="veil" id="veil" hidden></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<script>
+const CLASSES={
+A1:["بتلاء العنزي","بيلسان الغامدي","جوري الغامدي","حلا شراحيلي","رسيل الهويمل","رغد البليهد","رميم سعد","رند العمري","ساره القبس","سيرين الجهني","شهد القاسم","فرح العنيزان","لتين الثويني","لمار آل جحرش","ميار الرميح","هلا الشمري"],
+A2:["الجوهرة الحمد","العنود العمري","تالا العتيق","حور الهذلي","حور القحطاني","ديم المعيذر","رولا الشهري","ريتال الشهراني","سدن القحطاني","شهد البقمي","لانا القحطاني","لورا الدجين","لولوه سبره","نورة المحسن"],
+A3:["الماسة الشمري","ألين النعمي","جوان السهلي","جوري الغريبي","رازان العتيبي","رهف العجمي","روين الزهراني","سارة الوهبي","سارة العتيبي","سمر اباالخيل","لارين عاتي","لانا الوادعي","ليان الدوسري","مهرة الحربي","ميار العنزي","همس ال سعيد","وريف الطلحي"]};
+
+// [topic, question, options, correct index]
+const QS=[
+["Reflexive pronouns","Sarah cut ______ while she was peeling potatoes.",["herself","himself","themselves","yourself"],0],
+["Reflexive pronouns","I burned ______ when I was making fries.",["me","myself","mine","itself"],1],
+["Reflexive pronouns","We were on a TV show, and last night we saw ______ on Channel 9.",["ourselves","themselves","yourselves","us"],0],
+["Reflexive pronouns","The people injured ______ when they were escaping from the bull.",["himself","itself","themselves","ourselves"],2],
+["Reflexive pronouns","My grandfather slipped on a rug and hurt ______.",["herself","himself","itself","him"],1],
+["Reflexive pronouns","“I fixed the hair dryer myself.” What does myself show here?",["I did it without anyone’s help","Someone helped me","I hurt myself","I broke it"],0],
+["Because vs. so","The floor was wet, ______ Ahmed slipped and fell.",["because","so","neither","although"],1],
+["Because vs. so","Abdullah fell off his bike ______ he was riding too fast.",["so","because","neither","then"],1],
+["Because vs. so","I put my hand under cold running water ______ I burned myself.",["because","so","but","neither"],0],
+["Because vs. so","There were a lot of accidents at the intersection, ______ they installed traffic lights.",["because","so","neither","since"],1],
+["Because vs. so","Which word introduces a REASON (it tells why)?",["so","because","neither","myself"],1],
+["So and neither","A: I’m a careful driver.  B: ______",["So do I.","So am I.","Neither am I.","So did I."],1],
+["So and neither","A: I didn’t slip on the wet floor.  B: ______",["So did I.","Neither do I.","Neither did I.","So do I."],2],
+["So and neither","A: I’ve never broken an arm or leg.  B: ______",["Neither have I.","So have I.","Neither did I.","So did I."],0],
+["So and neither","A: I always wear a seat belt in the car.  B: ______",["So am I.","Neither do I.","So do I.","So have I."],2],
+["So and neither","A: I once broke my arm.  B: ______",["So do I.","So did I.","Neither did I.","So have I."],1],
+["Language in context","Which verb goes best with “ankle”?",["poke","sprain","burn","cut"],1],
+["Language in context","Which phrase describes an injury to the eye?",["sprain an eye","poke an eye","fracture an eye","burn an eye"],1],
+["Because vs. so","Omar fell off his skateboard, but he didn’t hurt himself ______ he was wearing a helmet and knee pads.",["so","because","neither","myself"],1],
+["Because vs. so","The workers didn’t turn off the electricity, ______ they got a shock.",["because","so","neither","themselves"],1],
+["Road safety","Which one is a SAFE driving habit?",["Talking on the phone while driving","Wearing a seat belt","Driving too fast","Driving too close to the car in front"],1],
+["Because vs. so","It was very foggy, ______ the driver slowed down.",["because","so","neither","although"],1],
+["Reflexive pronouns","Mona tried to open a can with a knife and cut ______.",["himself","herself","itself","myself"],1],
+["Vocabulary","The driver wasn’t injured. “Injured” means …",["hurt","happy","late","tired"],0],
+["Vocabulary","What should you wear to protect your head when you ride a bike?",["a seat belt","a helmet","knee pads","a cast"],1],
+["Conversation","In the conversation, how did Jasem hurt himself?",["He fell off his bike","He crashed his car","He slipped on oil","He fell from a tree"],0],
+["Conversation","In the conversation, what probably saved Samir’s life?",["His seat belt","His helmet","The ambulance","His friend"],1],
+["Conversation","In the conversation, why did Jasem swerve and hit a tree?",["A car stopped suddenly","A squirrel came out of nowhere","The road was wet","He was on his phone"],1],
+["Conversation","In the conversation, Jasem says “I got off lightly.” This means …",["I was only slightly hurt","I lost weight","I got off the bus","I was badly injured"],0],
+["Conversation","In the conversation, Samir says “Look at it this way.” This means …",["Look at the picture","There’s a different way to think about it","Be careful","Look at the road"],1],
+["Conversation","Jasem tells Samir: “You’re going to be stuck in that wheelchair.” Stuck in means …",["happy in","caught and unable to move out","sitting comfortably","driving"],1],
+["Conversation","In the conversation, Samir makes a joke. Why is he happy both legs are in casts?",["They look cool","More room for friends to sign their names","He can’t walk","The doctor said so"],1]
+];
+
+const KEY="pickask-u5-v1";
+let state={cls:"A1",data:{}};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.data)state=s}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function fresh(c){return{order:shuffle(CLASSES[c].map((_,i)=>i)),gone:[],q:{},queue:shuffle(QS.map((_,i)=>i))}}
+function cd(){const c=state.cls;const d=state.data[c];if(!d||d.order.length!==CLASSES[c].length)state.data[c]=fresh(c);return state.data[c]}
+function nextQ(d){if(!d.queue.length)d.queue=shuffle(QS.map((_,i)=>i));return d.queue.shift()}
+
+// girl avatar
+const SK=["#F6D3B3","#E9B993","#D49D76","#BE8460","#F2C9A8"];
+const CL=["#E8674A","#1F7A6D","#E0A43A","#6C8FD1","#C9688F","#7AA65A","#9C7BC8","#3FA0B5"];
+const HJ=["#2F3A4A","#B65A7A","#3E7C8C","#8C6A9E","#C9824A","#556B2F","#7B4B3A","#D9A6A0"];
+const HR=["#3B2418","#5A3A22","#1E1A18","#7A4A2A"];
+function avatar(i){
+  const sk=SK[i%5],cl=CL[i%8],hj=HJ[(i*3)%8],hr=HR[i%4],st=i%4,gl=i%6===4;
+  let back="",front="";
+  if(st===0){back=`<circle cx="50" cy="48" r="30" fill="${hj}"/><path d="M21 52 Q18 88 50 90 Q82 88 79 52Z" fill="${hj}"/>`;}
+  else{
+    back=`<ellipse cx="50" cy="50" rx="26" ry="28" fill="${hr}"/>`;
+    if(st===1)back+=`<rect x="25" y="50" width="50" height="34" rx="12" fill="${hr}"/>`;
+    if(st===2)back+=`<circle cx="31" cy="25" r="10" fill="${hr}"/><circle cx="69" cy="25" r="10" fill="${hr}"/>`;
+    if(st===3)back+=`<circle cx="78" cy="40" r="11" fill="${hr}"/><circle cx="72" cy="38" r="4" fill="${cl}"/>`;
+    front=`<path d="M30 50 Q28 25 50 25 Q72 25 70 50 Q64 37 50 38 Q38 37 30 50Z" fill="${hr}"/>`;
+  }
+  const glasses=gl?`<g fill="none" stroke="#2B2B2B" stroke-width="1.6"><circle cx="43" cy="53" r="5.5"/><circle cx="57" cy="53" r="5.5"/><path d="M48.5 53h3"/></g>`:"";
+  return `<svg viewBox="0 0 100 110" aria-hidden="true">
+  <circle cx="50" cy="56" r="48" fill="${cl}" opacity=".16"/>
+  <path d="M18 110 Q20 82 50 80 Q80 82 82 110Z" fill="${cl}"/>
+  ${back}<rect x="44" y="66" width="12" height="12" rx="4" fill="${sk}"/>
+  ${st===0?`<path d="M30 76 Q50 92 70 76 L70 84 Q50 98 30 84Z" fill="${hj}"/>`:""}
+  <ellipse cx="50" cy="52" rx="18" ry="20" fill="${sk}"/>${front}
+  <circle cx="43" cy="53" r="2.3" fill="#2B2B2B"/><circle cx="57" cy="53" r="2.3" fill="#2B2B2B"/>
+  <circle cx="39" cy="60" r="3" fill="#F08A8A" opacity=".45"/><circle cx="61" cy="60" r="3" fill="#F08A8A" opacity=".45"/>
+  <path d="M44.5 62 Q50 67 55.5 62" fill="none" stroke="#7A3B2E" stroke-width="1.8" stroke-linecap="round"/>${glasses}
+  </svg>`;
+}
+
+const $=id=>document.getElementById(id);
+let AC=null,muted=false;try{muted=localStorage.getItem(KEY+"-mute")==="1"}catch(e){}
+function tone(f,d,type="sine",at=0,g=.18,f2){
+  if(muted)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
+  const t=AC.currentTime+at,o=AC.createOscillator(),v=AC.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+  if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);v.gain.setValueAtTime(0,t);v.gain.linearRampToValueAtTime(g,t+.015);
+  v.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(v).connect(AC.destination);o.start(t);o.stop(t+d+.02)}catch(e){}}
+const SFX={
+  flip:()=>tone(520,.12,"triangle",0,.15,900),
+  tick:()=>tone(1100,.04,"square",0,.05),
+  open:()=>{tone(660,.1,"sine",0,.12);tone(990,.14,"sine",.08,.12)},
+  right:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,.22,"triangle",i*.09,.2));tone(1568,.5,"sine",.36,.08)},
+  wrong:()=>{tone(330,.22,"sawtooth",0,.08,260);tone(247,.38,"sawtooth",.2,.08,180)},
+  done:()=>{tone(880,.08,"sine",0,.1);tone(1320,.18,"sine",.07,.1)}
+};
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const c=$("fx"),x=c.getContext("2d"),W=c.width=innerWidth,H=c.height=innerHeight;
+  const cols=["#E8674A","#1F7A6D","#E0A43A","#6C8FD1","#C9688F","#7AA65A"];
+  const P=Array.from({length:140},()=>({x:W/2+(Math.random()-.5)*120,y:H*.45,vx:(Math.random()-.5)*14,vy:-Math.random()*14-5,r:Math.random()*6+4,a:Math.random()*6,va:(Math.random()-.5)*.4,c:cols[Math.random()*6|0]}));
+  let n=0;(function f(){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.35;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore()});
+  if(++n<110)requestAnimationFrame(f);else x.clearRect(0,0,W,H)})();
+}
+function renderTabs(){
+  $("tabs").innerHTML=Object.keys(CLASSES).map(c=>`<button class="tab" role="tab" id="tab-${c}" aria-selected="${c===state.cls}" data-c="${c}">${c}</button>`).join("");
+}
+$("tabs").onclick=e=>{const c=e.target.dataset.c;if(c){state.cls=c;save();renderAll()}};
+function renderGrid(){
+  const d=cd(),names=CLASSES[state.cls],left=d.order.length-d.gone.length;
+  $("count").innerHTML=`<b>${left}</b> of ${names.length} girls left in ${state.cls}`;
+  if(!left){$("grid").innerHTML=`<div class="empty" style="grid-column:1/-1"><h2>Everyone in ${state.cls} answered! 🎉</h2><p>Tap “Reset class” to play again with new questions.</p></div>`;return}
+  $("grid").innerHTML=d.order.map((ni,pos)=>{
+    if(d.gone.includes(ni))return"";
+    return `<button class="card" id="card-${ni}" data-n="${ni}" aria-label="Character ${pos+1}">
+      <div class="inner"><div class="face front">${avatar(pos)}<div class="num">#${pos+1}</div></div>
+      <div class="face back">${avatar(pos)}<div class="nm">${names[ni]}</div></div></div></button>`}).join("");
+}
+function renderAll(){renderTabs();renderGrid();resetBar()}
+$("grid").onclick=e=>{const c=e.target.closest(".card");if(c)reveal(c)};
+let busy=false;
+function reveal(card){
+  if(busy)return;busy=true;card.classList.add("flipped");SFX.flip();
+  setTimeout(()=>{openSheet(+card.dataset.n,card);busy=false},900);
+}
+function openSheet(ni,card){
+  const d=cd();if(d.q[ni]==null){d.q[ni]=nextQ(d);save()}
+  const pos=d.order.indexOf(ni);
+  const draw=()=>{
+    const [topic,q,opts,ans]=QS[d.q[ni]];
+    $("veil").innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="Question">
+      <div class="who">${avatar(pos)}<div><div class="nm">${CLASSES[state.cls][ni]}</div><span class="chip">${topic}</span></div></div>
+      <p class="q">${q}</p>
+      <div class="opts">${opts.map((o,i)=>`<button class="opt" data-i="${i}"><i>${"ABCD"[i]}</i>${o}</button>`).join("")}</div>
+      <div class="fb" id="fb"></div>
+      <div class="row"><button class="btn" id="back">Back</button><button class="btn" id="swap">Another question</button><button class="btn" id="show">Show answer</button><button class="btn primary" id="done">Done ✓</button></div></div>`;
+    const mark=i=>{
+      $("veil").querySelectorAll(".opt").forEach(b=>{const k=+b.dataset.i;if(k===ans)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
+      const fb=$("fb");
+      const sh=$("veil").querySelector(".sheet"),av=$("veil").querySelector(".who svg");
+      if(i===undefined){fb.className="fb ok";fb.textContent="Answer: "+opts[ans]}
+      else if(i===ans){fb.className="fb ok";fb.textContent=["Correct! Well done 🌟","Excellent! 🎉","Amazing! 💯","You got it! 👏"][Math.random()*4|0];SFX.right();confetti();av.classList.add("jump")}
+      else{fb.className="fb no";fb.textContent="Oops! The answer is: "+opts[ans];SFX.wrong();sh.classList.remove("shake");void sh.offsetWidth;sh.classList.add("shake")}
+    };
+    $("veil").querySelector(".opts").onclick=e=>{const b=e.target.closest(".opt");if(b&&!$("fb").textContent)mark(+b.dataset.i)};
+    $("show").onclick=()=>{if(!$("fb").textContent)mark()};
+    $("swap").onclick=()=>{d.q[ni]=nextQ(d);save();draw()};
+    $("back").onclick=()=>{$("veil").hidden=true;card.classList.remove("flipped")};
+    $("done").onclick=()=>{
+      $("veil").hidden=true;d.gone.push(ni);save();card.classList.add("gone");SFX.done();
+      setTimeout(renderGrid,380);
+    };
+  };
+  draw();$("veil").hidden=false;SFX.open();
+}
+function randomPick(){
+  const cards=[...$("grid").querySelectorAll(".card")];if(!cards.length||busy)return;
+  busy=true;let n=0;const steps=12;let prev;
+  const tick=()=>{
+    prev&&prev.classList.remove("pulse");prev=cards[Math.floor(Math.random()*cards.length)];prev.classList.add("pulse");SFX.tick();
+    if(++n<steps)setTimeout(tick,70+n*12);else setTimeout(()=>{prev.classList.remove("pulse");busy=false;reveal(prev)},300);
+  };tick();
+}
+function resetBar(){
+  $("actions").innerHTML=`<button class="btn" id="mute" aria-pressed="${muted}">${muted?"🔇 Sound off":"🔊 Sound on"}</button><button class="btn primary" id="rand2">🎲 Random girl</button><button class="btn" id="reset2">Reset class</button>`;
+  $("rand2").onclick=randomPick;
+  $("mute").onclick=()=>{muted=!muted;try{localStorage.setItem(KEY+"-mute",muted?"1":"0")}catch(e){}resetBar();if(!muted)SFX.done()};
+  $("reset2").onclick=()=>{
+    $("actions").innerHTML=`<span class="confirm">Reset ${state.cls}? All girls come back.</span><button class="btn primary" id="yes">Yes, reset</button><button class="btn" id="no">Cancel</button>`;
+    $("yes").onclick=()=>{state.data[state.cls]=fresh(state.cls);save();renderAll()};
+    $("no").onclick=resetBar;
+  };
+}
+renderAll();
+</script>
+
+</body>
+</html>
