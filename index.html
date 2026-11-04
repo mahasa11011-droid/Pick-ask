@@ -24,6 +24,9 @@
   --accent:#F07F64; --accent-ink:#1A1210; --teal:#5FC2B1; --soft:#3A2722;
   --ok:#6FD39A; --ok-bg:#1E3A2B; --bad:#F2847C; --bad-bg:#3D2321; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
 .wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
@@ -47,9 +50,9 @@ h1 span{color:var(--accent)}
   transition:transform .35s ease,opacity .35s ease}
 .card.gone{transform:scale(.3) rotate(-8deg);opacity:0;pointer-events:none}
 .card.pulse .face{box-shadow:0 0 0 4px var(--accent)}
-.inner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,1.4,.5,1);transform-style:preserve-3d}
+.inner{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,1.4,.5,1);-webkit-transform-style:preserve-3d;transform-style:preserve-3d}
 .card.flipped .inner{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;border-radius:18px;background:var(--paper);border:2px solid var(--line);backface-visibility:hidden;
+.face{position:absolute;inset:0;border-radius:18px;background:var(--paper);border:2px solid var(--line);-webkit-backface-visibility:hidden;backface-visibility:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px}
 .face svg{width:88%;height:auto}
 .num{font:800 15px var(--f-body);color:var(--muted)}
