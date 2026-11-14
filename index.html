@@ -56,6 +56,10 @@ h1 span{color:var(--accent)}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px}
 .face svg{width:88%;height:auto}
 .num{font:800 15px var(--f-body);color:var(--muted)}
+.dots{display:flex;gap:5px;justify-content:center}
+.dots span{width:11px;height:11px;border-radius:50%;border:2px solid var(--teal);background:transparent}
+.dots span.on{background:var(--teal)}
+.turn{font-weight:800;color:var(--teal);font-size:14px;margin-left:8px}
 .back{transform:rotateY(180deg);background:var(--soft);border-color:var(--accent)}
 .back .nm{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1.15;text-align:center;direction:rtl}
 .card:hover .front{border-color:var(--teal)}
@@ -121,41 +125,72 @@ A3:["الماسة الشمري","ألين النعمي","جوان السهلي",
 
 // [topic, question, options, correct index]
 const QS=[
-["Reflexive pronouns","Sarah cut ______ while she was peeling potatoes.",["herself","himself","themselves","yourself"],0],
-["Reflexive pronouns","I burned ______ when I was making fries.",["me","myself","mine","itself"],1],
-["Reflexive pronouns","We were on a TV show, and last night we saw ______ on Channel 9.",["ourselves","themselves","yourselves","us"],0],
-["Reflexive pronouns","The people injured ______ when they were escaping from the bull.",["himself","itself","themselves","ourselves"],2],
-["Reflexive pronouns","My grandfather slipped on a rug and hurt ______.",["herself","himself","itself","him"],1],
-["Reflexive pronouns","“I fixed the hair dryer myself.” What does myself show here?",["I did it without anyone’s help","Someone helped me","I hurt myself","I broke it"],0],
-["Because vs. so","The floor was wet, ______ Ahmed slipped and fell.",["because","so","neither","although"],1],
-["Because vs. so","Abdullah fell off his bike ______ he was riding too fast.",["so","because","neither","then"],1],
-["Because vs. so","I put my hand under cold running water ______ I burned myself.",["because","so","but","neither"],0],
-["Because vs. so","There were a lot of accidents at the intersection, ______ they installed traffic lights.",["because","so","neither","since"],1],
-["Because vs. so","Which word introduces a REASON (it tells why)?",["so","because","neither","myself"],1],
-["So and neither","A: I’m a careful driver.  B: ______",["So do I.","So am I.","Neither am I.","So did I."],1],
-["So and neither","A: I didn’t slip on the wet floor.  B: ______",["So did I.","Neither do I.","Neither did I.","So do I."],2],
-["So and neither","A: I’ve never broken an arm or leg.  B: ______",["Neither have I.","So have I.","Neither did I.","So did I."],0],
-["So and neither","A: I always wear a seat belt in the car.  B: ______",["So am I.","Neither do I.","So do I.","So have I."],2],
-["So and neither","A: I once broke my arm.  B: ______",["So do I.","So did I.","Neither did I.","So have I."],1],
-["Language in context","Which verb goes best with “ankle”?",["poke","sprain","burn","cut"],1],
-["Language in context","Which phrase describes an injury to the eye?",["sprain an eye","poke an eye","fracture an eye","burn an eye"],1],
-["Because vs. so","Omar fell off his skateboard, but he didn’t hurt himself ______ he was wearing a helmet and knee pads.",["so","because","neither","myself"],1],
-["Because vs. so","The workers didn’t turn off the electricity, ______ they got a shock.",["because","so","neither","themselves"],1],
-["Road safety","Which one is a SAFE driving habit?",["Talking on the phone while driving","Wearing a seat belt","Driving too fast","Driving too close to the car in front"],1],
-["Because vs. so","It was very foggy, ______ the driver slowed down.",["because","so","neither","although"],1],
-["Reflexive pronouns","Mona tried to open a can with a knife and cut ______.",["himself","herself","itself","myself"],1],
-["Vocabulary","The driver wasn’t injured. “Injured” means …",["hurt","happy","late","tired"],0],
-["Vocabulary","What should you wear to protect your head when you ride a bike?",["a seat belt","a helmet","knee pads","a cast"],1],
-["Conversation","In the conversation, how did Jasem hurt himself?",["He fell off his bike","He crashed his car","He slipped on oil","He fell from a tree"],0],
-["Conversation","In the conversation, what probably saved Samir’s life?",["His seat belt","His helmet","The ambulance","His friend"],1],
-["Conversation","In the conversation, why did Jasem swerve and hit a tree?",["A car stopped suddenly","A squirrel came out of nowhere","The road was wet","He was on his phone"],1],
-["Conversation","In the conversation, Jasem says “I got off lightly.” This means …",["I was only slightly hurt","I lost weight","I got off the bus","I was badly injured"],0],
-["Conversation","In the conversation, Samir says “Look at it this way.” This means …",["Look at the picture","There’s a different way to think about it","Be careful","Look at the road"],1],
-["Conversation","Jasem tells Samir: “You’re going to be stuck in that wheelchair.” Stuck in means …",["happy in","caught and unable to move out","sitting comfortably","driving"],1],
-["Conversation","In the conversation, Samir makes a joke. Why is he happy both legs are in casts?",["They look cool","More room for friends to sign their names","He can’t walk","The doctor said so"],1]
+["Vocabulary", "Ouch! I touched the broken wire and got a ______.", ["shock", "cut", "cast", "sprain"], 0],
+["Vocabulary", "Be careful! The floor is wet. Don’t ______.", ["poke", "break", "burn", "slip"], 3],
+["Vocabulary", "I touched the hot pan and ______ my hand.", ["cut", "broke", "poked", "burned"], 3],
+["Vocabulary", "Nobody was ______ in the accident. Everyone was OK.", ["wearing", "injured", "lucky", "careful"], 1],
+["Vocabulary", "Always wear your ______ when you are in the car.", ["helmet", "seat belt", "knee pads", "cast"], 1],
+["Vocabulary", "Huda wears ______ on her knees when she skates.", ["a cast", "a seat belt", "knee pads", "a helmet"], 2],
+["Vocabulary", "Tired drivers may ______ the traffic and crash. They think the car is far, but it is close.", ["sever", "misjudge", "prevent", "encounter"], 1],
+["Vocabulary", "“To misjudge” means …", ["to meet someone by chance", "to stop something from happening", "to form a wrong opinion about someone or something", "to cut something completely"], 2],
+["Vocabulary", "Drivers often ______ tired drivers late at night. They meet them on the road by chance.", ["encounter", "sever", "prevent", "injure"], 0],
+["Vocabulary", "Aggressive drivers sometimes make rude ______ with their hands.", ["helmets", "encounters", "gestures", "injuries"], 2],
+["Vocabulary", "Waving your hand to say hello is a ______.", ["injury", "encounter", "crash", "gesture"], 3],
+["Vocabulary", "Wearing a seat belt can ______ serious injuries.", ["misjudge", "sever", "prevent", "encounter"], 2],
+["Vocabulary", "“To prevent” means …", ["to hurt a person or an animal", "to form a wrong opinion", "to stop something from happening", "to meet someone by chance"], 2],
+["Vocabulary", "Fast drivers can ______ people and animals on the road.", ["gesture", "injure", "encounter", "prevent"], 1],
+["Vocabulary", "The storm knocked down a tree, and it ______ the electric cable. The cable was cut into two pieces.", ["encountered", "severed", "prevented", "misjudged"], 1],
+["Vocabulary", "“To sever” means …", ["a movement of the hand", "to cut something completely, or to end a connection", "to hurt a person or an animal", "to meet someone by chance"], 1],
+["Language in context", "Hessa twisted her foot while running. She ______ her ankle.", ["burned", "sprained", "cut", "poked"], 1],
+["Language in context", "Be careful with that pencil! You could ______ your eye.", ["burn", "poke", "sprain", "fracture"], 1],
+["Language in context", "She fell from her horse and ______ her arm. Now her arm is in a cast.", ["burned", "poked", "fractured", "cut"], 2],
+["Language in context", "I was cutting vegetables with a knife and ______ my finger.", ["cut", "poked", "sprained", "fractured"], 0],
+["Language in context", "The ball hit his face hard and ______ his nose.", ["poked", "sprained", "broke", "burned"], 2],
+["Language in context", "Lama touched the hot oven. She ______ her hand.", ["sprained", "burned", "poked", "broke"], 1],
+["Real Talk", "Nothing bad happened to me today, and I won a prize. It was my ______!", ["stuck day", "sad day", "bad day", "lucky day"], 3],
+["Real Talk", "“I’m stuck in traffic.” Stuck in means …", ["going home early", "caught and unable to move out", "driving very fast", "happy and relaxed"], 1],
+["Real Talk", "“Is Noura coming to school today?” “I guess so.” I guess shows that you are …", ["not totally sure", "angry", "very sure", "lucky"], 0],
+["Real Talk", "“I lost the game, but look at it this way: I learned a lot.” Look at it this way means …", ["be careful", "look at the road", "look at the picture", "there is a different way to think about it"], 3],
+["Reading words", "My grandfather has no hair on his head. He is ______.", ["lucky", "bald", "injured", "brave"], 1],
+["Reading words", "The motorcycle ______ through the heavy traffic, turning left and right.", ["hurled", "burst", "recovered", "weaved"], 3],
+["Reading words", "The balloon got too big and ______.", ["burst", "recovered", "challenged", "weaved"], 0],
+["Reading words", "The angry player ______ the ball with great force.", ["weaved", "hurled", "recovered", "burst"], 1],
+["Reading words", "Reem was sick for a week, but now she has ______.", ["weaved", "recovered", "burst", "hurled"], 1],
+["Reading words", "“To challenge” means …", ["to get better", "to explode", "to contest or fight against", "to throw with force"], 2],
+["Reflexive pronouns", "Sarah cut ______ while she was peeling potatoes.", ["herself", "himself", "yourself", "themselves"], 0],
+["Reflexive pronouns", "The instructions on the box say: “Do it ______.”", ["yourself", "itself", "ourselves", "myself"], 0],
+["Reflexive pronouns", "The children hurt ______ while they were playing.", ["itself", "ourselves", "himself", "themselves"], 3],
+["Reflexive pronouns", "We cooked dinner ______. Nobody helped us.", ["themselves", "myself", "ourselves", "yourselves"], 2],
+["Reflexive pronouns", "I burned ______ when I was making fries.", ["myself", "itself", "mine", "me"], 0],
+["Because vs. so", "The floor was wet, ______ Ahmed slipped and fell.", ["because", "neither", "so", "myself"], 2],
+["Because vs. so", "Abdullah fell off his bike ______ he was riding too fast.", ["then", "so", "neither", "because"], 3],
+["Because vs. so", "I didn’t want to wake up late, ______ I used two alarm clocks.", ["neither", "because", "myself", "so"], 3],
+["Because vs. so", "The mosquitoes didn’t bite me ______ I had put on repellent.", ["because", "then", "so", "neither"], 0],
+["Because vs. so", "Jake burned his arm, ______ he went to the emergency room.", ["himself", "neither", "so", "because"], 2],
+["So and neither", "A: I’m a careful driver.   B: ______", ["Neither am I.", "So am I.", "So do I.", "So did I."], 1],
+["So and neither", "A: I didn’t slip on the wet floor.   B: ______", ["So do I.", "Neither did I.", "Neither do I.", "So did I."], 1],
+["So and neither", "A: I’ve never broken my arm.   B: ______", ["So have I.", "Neither did I.", "Neither have I.", "So did I."], 2],
+["So and neither", "A: I need a new pair of sneakers.   B: ______", ["Neither do I.", "So do I.", "So am I.", "So did I."], 1],
+["So and neither", "A: I’m not tired.   B: ______", ["So do I.", "Neither do I.", "So am I.", "Neither am I."], 3],
+["Must and should", "You ______ stop at a red traffic light. It’s the law.", ["shouldn’t", "must", "might not", "mustn’t"], 1],
+["Must and should", "You look tired. You ______ go to bed early.", ["should", "mustn’t", "shouldn’t", "must not"], 0],
+["Must and should", "You ______ use your phone while you are driving. It’s against the law.", ["must not", "should", "must", "can"], 0],
+["Must and should", "“I’m running out of gas.” “You ______ stop at the next gas station.”", ["mustn’t", "should", "shouldn’t", "don’t"], 1],
+["Must and should", "Which word is stronger and more official?", ["might", "could", "should", "must"], 3],
+["Adverbs of manner", "Brian doesn’t stop at stop signs. He drives ______.", ["carefully", "recklessly", "reckless", "careful"], 1],
+["Adverbs of manner", "Alexander is a good driver. He drives ______.", ["bad", "goodly", "good", "well"], 3],
+["Adverbs of manner", "The road is wet. Please drive ______!", ["care", "careful", "carefully", "carefuly"], 2],
+["Adverbs of manner", "She is a fast runner. She runs ______.", ["fasting", "faster", "fastly", "fast"], 3],
+["Prepositions of place", "The pharmacy and the bookstore are side by side. The pharmacy is ______ the bookstore.", ["next to", "between", "far from", "across from"], 0],
+["Prepositions of place", "The bank is ______ the post office and the restaurant.", ["in", "between", "next", "on"], 1],
+["Prepositions of place", "I live ______ the third floor.", ["to", "at", "in", "on"], 3],
+["Prepositions of place", "I live ______ Jeddah.", ["in", "on", "to", "at"], 0],
+["Prepositions of place", "The airport is ______ town. It takes an hour to get there.", ["far from", "between", "next to", "on"], 0],
+["Directions", "“Excuse me, where is the post office?” “Go straight and ______ left.”", ["turn", "go to", "make", "do"], 0],
+["Directions", "Which sentence gives directions?", ["Did you take a right?", "Take a right at the bank.", "I took a right yesterday.", "He is always right."], 1]
 ];
 
-const KEY="pickask-u5-v1";
+const KEY="pickask-u5-v2";
 let state={cls:"A1",data:{}};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&s.data)state=s}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
@@ -169,7 +204,15 @@ const SK=["#F6D3B3","#E9B993","#D49D76","#BE8460","#F2C9A8"];
 const CL=["#E8674A","#1F7A6D","#E0A43A","#6C8FD1","#C9688F","#7AA65A","#9C7BC8","#3FA0B5"];
 const HJ=["#2F3A4A","#B65A7A","#3E7C8C","#8C6A9E","#C9824A","#556B2F","#7B4B3A","#D9A6A0"];
 const HR=["#3B2418","#5A3A22","#1E1A18","#7A4A2A"];
-function avatar(i){
+// pose: 0 standing, 1 raises one hand, 2 lowers it and raises the other, 3 both hands up cheering
+function arms(i,pose,cl,sk){
+  if(!pose)return"";
+  const L=`<path class="arm" d="M31 93 Q20 80 17 61" fill="none" stroke="${cl}" stroke-width="8" stroke-linecap="round"/><circle cx="17" cy="57" r="5" fill="${sk}"/>`;
+  const R=`<path class="arm" d="M69 93 Q80 80 83 61" fill="none" stroke="${cl}" stroke-width="8" stroke-linecap="round"/><circle cx="83" cy="57" r="5" fill="${sk}"/>`;
+  const first=i%2?R:L,second=i%2?L:R;
+  return pose===1?first:pose===2?second:L+R;
+}
+function avatar(i,pose=0){
   const sk=SK[i%5],cl=CL[i%8],hj=HJ[(i*3)%8],hr=HR[i%4],st=i%4,gl=i%6===4;
   let back="",front="";
   if(st===0){back=`<circle cx="50" cy="48" r="30" fill="${hj}"/><path d="M21 52 Q18 88 50 90 Q82 88 79 52Z" fill="${hj}"/>`;}
@@ -189,7 +232,7 @@ function avatar(i){
   <ellipse cx="50" cy="52" rx="18" ry="20" fill="${sk}"/>${front}
   <circle cx="43" cy="53" r="2.3" fill="#2B2B2B"/><circle cx="57" cy="53" r="2.3" fill="#2B2B2B"/>
   <circle cx="39" cy="60" r="3" fill="#F08A8A" opacity=".45"/><circle cx="61" cy="60" r="3" fill="#F08A8A" opacity=".45"/>
-  <path d="M44.5 62 Q50 67 55.5 62" fill="none" stroke="#7A3B2E" stroke-width="1.8" stroke-linecap="round"/>${glasses}
+  ${pose===3?`<path d="M44 61 Q50 70 56 61Z" fill="#7A3B2E"/><path d="M14 40l2 4 4 1-4 2-1 4-2-4-4-1 4-2z M86 38l2 4 4 1-4 2-1 4-2-4-4-1 4-2z" fill="#E0A43A"/>`:`<path d="M44.5 62 Q50 67 55.5 62" fill="none" stroke="#7A3B2E" stroke-width="1.8" stroke-linecap="round"/>`}${glasses}${arms(i,pose,cl,sk)}
   </svg>`;
 }
 
@@ -220,15 +263,18 @@ function renderTabs(){
   $("tabs").innerHTML=Object.keys(CLASSES).map(c=>`<button class="tab" role="tab" id="tab-${c}" aria-selected="${c===state.cls}" data-c="${c}">${c}</button>`).join("");
 }
 $("tabs").onclick=e=>{const c=e.target.dataset.c;if(c){state.cls=c;save();renderAll()}};
+const TURNS=3;
+const cntOf=(d,ni)=>(d.cnt&&d.cnt[ni])||0;
+const dots=n=>`<div class="dots" aria-label="${n} of ${TURNS} answered">${Array.from({length:TURNS},(_,i)=>`<span class="${i<n?"on":""}"></span>`).join("")}</div>`;
 function renderGrid(){
   const d=cd(),names=CLASSES[state.cls],left=d.order.length-d.gone.length;
-  $("count").innerHTML=`<b>${left}</b> of ${names.length} girls left in ${state.cls}`;
+  $("count").innerHTML=`<b>${left}</b> of ${names.length} girls left in ${state.cls} · each girl answers ${TURNS} questions`;
   if(!left){$("grid").innerHTML=`<div class="empty" style="grid-column:1/-1"><h2>Everyone in ${state.cls} answered! 🎉</h2><p>Tap “Reset class” to play again with new questions.</p></div>`;return}
   $("grid").innerHTML=d.order.map((ni,pos)=>{
     if(d.gone.includes(ni))return"";
     return `<button class="card" id="card-${ni}" data-n="${ni}" aria-label="Character ${pos+1}">
-      <div class="inner"><div class="face front">${avatar(pos)}<div class="num">#${pos+1}</div></div>
-      <div class="face back">${avatar(pos)}<div class="nm">${names[ni]}</div></div></div></button>`}).join("");
+      <div class="inner"><div class="face front">${avatar(pos,cntOf(d,ni))}<div class="num">#${pos+1}</div>${dots(cntOf(d,ni))}</div>
+      <div class="face back">${avatar(pos,cntOf(d,ni))}<div class="nm">${names[ni]}</div></div></div></button>`}).join("");
 }
 function renderAll(){renderTabs();renderGrid();resetBar()}
 $("grid").onclick=e=>{const c=e.target.closest(".card");if(c)reveal(c)};
@@ -243,7 +289,7 @@ function openSheet(ni,card){
   const draw=()=>{
     const [topic,q,opts,ans]=QS[d.q[ni]];
     $("veil").innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="Question">
-      <div class="who">${avatar(pos)}<div><div class="nm">${CLASSES[state.cls][ni]}</div><span class="chip">${topic}</span></div></div>
+      <div class="who">${avatar(pos,cntOf(d,ni))}<div><div class="nm">${CLASSES[state.cls][ni]}</div><span class="chip">${topic}</span><span class="turn">Question ${cntOf(d,ni)+1} of ${TURNS}</span></div></div>
       <p class="q">${q}</p>
       <div class="opts">${opts.map((o,i)=>`<button class="opt" data-i="${i}"><i>${"ABCD"[i]}</i>${o}</button>`).join("")}</div>
       <div class="fb" id="fb"></div>
@@ -251,7 +297,8 @@ function openSheet(ni,card){
     const mark=i=>{
       $("veil").querySelectorAll(".opt").forEach(b=>{const k=+b.dataset.i;if(k===ans)b.classList.add("right");else if(k===i)b.classList.add("wrong")});
       const fb=$("fb");
-      const sh=$("veil").querySelector(".sheet"),av=$("veil").querySelector(".who svg");
+      $("veil").querySelector(".who svg").outerHTML=avatar(pos,Math.min(cntOf(d,ni)+1,TURNS));
+      const sh=$("veil").querySelector(".sheet"),av=$("veil").querySelector(".who svg");av.classList.add("jump");
       if(i===undefined){fb.className="fb ok";fb.textContent="Answer: "+opts[ans]}
       else if(i===ans){fb.className="fb ok";fb.textContent=["Correct! Well done 🌟","Excellent! 🎉","Amazing! 💯","You got it! 👏"][Math.random()*4|0];SFX.right();confetti();av.classList.add("jump")}
       else{fb.className="fb no";fb.textContent="Oops! The answer is: "+opts[ans];SFX.wrong();sh.classList.remove("shake");void sh.offsetWidth;sh.classList.add("shake")}
@@ -261,14 +308,16 @@ function openSheet(ni,card){
     $("swap").onclick=()=>{d.q[ni]=nextQ(d);save();draw()};
     $("back").onclick=()=>{$("veil").hidden=true;card.classList.remove("flipped")};
     $("done").onclick=()=>{
-      $("veil").hidden=true;d.gone.push(ni);save();card.classList.add("gone");SFX.done();
-      setTimeout(renderGrid,380);
+      d.cnt=d.cnt||{};d.cnt[ni]=cntOf(d,ni)+1;delete d.q[ni];$("veil").hidden=true;SFX.done();
+      if(d.cnt[ni]>=TURNS){d.gone.push(ni);save();card.classList.add("gone");setTimeout(renderGrid,380)}
+      else{save();card.classList.remove("flipped");setTimeout(renderGrid,650)}
     };
   };
   draw();$("veil").hidden=false;SFX.open();
 }
 function randomPick(){
-  const cards=[...$("grid").querySelectorAll(".card")];if(!cards.length||busy)return;
+  const d=cd();let cards=[...$("grid").querySelectorAll(".card")];if(!cards.length||busy)return;
+  const low=Math.min(...cards.map(c=>cntOf(d,+c.dataset.n)));cards=cards.filter(c=>cntOf(d,+c.dataset.n)===low);
   busy=true;let n=0;const steps=12;let prev;
   const tick=()=>{
     prev&&prev.classList.remove("pulse");prev=cards[Math.floor(Math.random()*cards.length)];prev.classList.add("pulse");SFX.tick();
